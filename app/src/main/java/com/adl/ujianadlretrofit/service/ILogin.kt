@@ -9,7 +9,7 @@ interface ILogin {
 
     @Headers("X-Api-Key:09FEAB3A4B5822697BA232274FBC3B04")
     @GET("api/login/all")
-    fun getAllLogin(): Call<GetLoginUserResponse>
+    fun getAllLogin(@Query("filter")query:String): Call<GetLoginUserResponse>
 
     @FormUrlEncoded
     @Headers("X-Api-Key:09FEAB3A4B5822697BA232274FBC3B04")

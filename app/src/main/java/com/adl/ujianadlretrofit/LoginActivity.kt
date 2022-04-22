@@ -1,5 +1,6 @@
 package com.adl.ujianadlretrofit
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -17,60 +18,28 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        setupUI()
-
-        LoginConfig().getLogin().getAllLogin().enqueue(object :Callback<GetLoginUserResponse>{
+        btnLogin.setOnClickListener({
+        LoginConfig().getLogin().getAllLogin("filter=&field=&start=&limit=&filters[0][co][0][fl]=username&filters[0][co][0][op]=equal&filters[0][co][0][vl]=&filters[0][co][0][lg]=${txtUsername.text.toString()}&filters[0][co][1][fl]=password&filters[0][co][1][op]=equal&filters[0][co][1][vl]=${txtPassword.text.toString()}").enqueue(object :Callback<GetLoginUserResponse>{
             override fun onResponse(
                 call: Call<GetLoginUserResponse>,
                 response: Response<GetLoginUserResponse>
             ) {
                 Log.d("Response",response.body().toString())
+                val dataLogin: GetLoginUserResponse? = response.body()
+                Toast.makeText(this@LoginActivity,"success", Toast.LENGTH_LONG).show()
+                val intent = Intent(this@LoginActivity, MenuActivity::class.java)
+                startActivity(intent)
             }
 
             override fun onFailure(call: Call<GetLoginUserResponse>, t: Throwable) {
-                Log.e("error request",t.localizedMessage.toString())
+                Toast.makeText(this@LoginActivity,"error", Toast.LENGTH_LONG).show()
             }
 
         })
 
+    })
+
     }
 
-    private fun setupUI(){
-        btnLogin.setOnClickListener({
-            LoginConfig().getLogin().getAllLogin().enqueue(object :Callback<GetLoginUserResponse>{
-                override fun onResponse(
-                    call: Call<GetLoginUserResponse>,
-                    response: Response<GetLoginUserResponse>
-                ) {
-                    Toast.makeText(this@LoginActivity,(response.body() as GetLoginUserResponse).message,Toast.LENGTH_LONG).show()
-                }
-
-                override fun onFailure(call: Call<GetLoginUserResponse>, t: Throwable) {
-                    Log.e("error get data",t.localizedMessage.toString())
-                }
-
-            })
-        })
-    }
-
-
-//    private fun setupUI(){
-//        btnLogin.setOnClickListener({
-//            LoginConfig().getLogin().addLogin(txtUsername.text.toString(),txtPassword.text.toString()
-//            ).enqueue(object :Callback<LoginUserPostData>{
-//                override fun onResponse(
-//                    call: Call<LoginUserPostData>,
-//                    response: Response<LoginUserPostData>
-//                ) {
-//                    Toast.makeText(this@LoginActivity,(response.body() as LoginUserPostData).message,Toast.LENGTH_LONG).show()
-//                }
-//
-//                override fun onFailure(call: Call<LoginUserPostData>, t: Throwable) {
-//                    Log.e("error post data",t.localizedMessage.toString())
-//                }
-//
-//            })
-//        })
-//    }
 
 }
