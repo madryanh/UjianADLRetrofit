@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class GetLoginUserResponse(
+data class GetLoginResponse(
 
 	@field:SerializedName("total")
 	val total: Int? = null,
@@ -21,7 +21,14 @@ data class GetLoginUserResponse(
 ) : Parcelable
 
 @Parcelize
-data class LoginuserItem(
+data class Data(
+
+	@field:SerializedName("loginuser")
+	val tabel: List<TabelUser?>? = null
+) : Parcelable
+
+@Parcelize
+data class TabelUser(
 
 	@field:SerializedName("password")
 	val password: String? = null,
@@ -31,11 +38,4 @@ data class LoginuserItem(
 
 	@field:SerializedName("username")
 	val username: String? = null
-) : Parcelable
-
-@Parcelize
-data class Data(
-
-	@field:SerializedName("loginuser")
-	val loginuser: List<LoginuserItem?>? = null
 ) : Parcelable

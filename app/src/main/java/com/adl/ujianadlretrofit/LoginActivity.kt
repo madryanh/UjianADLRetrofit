@@ -5,8 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import com.adl.ujianadlretrofit.model.GetLoginUserResponse
-import com.adl.ujianadlretrofit.model.LoginUserPostData
+import com.adl.ujianadlretrofit.model.GetLoginResponse
 import com.adl.ujianadlretrofit.service.LoginConfig
 import kotlinx.android.synthetic.main.activity_login.*
 import retrofit2.Call
@@ -18,28 +17,48 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        btnLogin.setOnClickListener({
-        LoginConfig().getLogin().getAllLogin("filter=&field=&start=&limit=&filters[0][co][0][fl]=username&filters[0][co][0][op]=equal&filters[0][co][0][vl]=&filters[0][co][0][lg]=${txtUsername.text.toString()}&filters[0][co][1][fl]=password&filters[0][co][1][op]=equal&filters[0][co][1][vl]=${txtPassword.text.toString()}").enqueue(object :Callback<GetLoginUserResponse>{
+        btnLogin.setOnClickListener{
+            login()
+        }
+    }
+    fun login(){
+        LoginConfig().getLogin().getAllLogin(txtUsername.text.toString()).enqueue(object: Callback<GetLoginResponse>{
             override fun onResponse(
-                call: Call<GetLoginUserResponse>,
-                response: Response<GetLoginUserResponse>
+                call: Call<GetLoginResponse>,
+                response: Response<GetLoginResponse>
             ) {
-                Log.d("Response",response.body().toString())
-                val dataLogin: GetLoginUserResponse? = response.body()
-                Toast.makeText(this@LoginActivity,"success", Toast.LENGTH_LONG).show()
-                val intent = Intent(this@LoginActivity, MenuActivity::class.java)
-                startActivity(intent)
+                var data = response.body()?.data?.tabel
+
+                if(response.isSuccessful){
+                    Log.d("data","${data}")
+                    if (data?.size == 0){
+                        Toast.makeText(this@LoginActivity,"Please Login First",Toast.LENGTH_LONG).show()
+                    }else{
+
+                        var currentUser = response.body()?.data?.tabel?.get(0)
+                        if(currentUser?.username == txtUsername.text.toString() && currentUser?.password == txtPassword.text.toString()){
+                            Toast.makeText(this@LoginActivity,"Account Confirmed",Toast.LENGTH_SHORT).show()
+                            val intent = Intent(this@LoginActivity, MenuActivity::class.java)
+                            intent.putExtra("data", currentUser)
+                            startActivity(intent)
+                        }else{
+                            Toast.makeText(this@LoginActivity,"Username or Password Wrong",Toast.LENGTH_LONG).show()
+                        }
+
+                    }
+                }else{
+                    Toast.makeText(this@LoginActivity,"username and password can't empty",Toast.LENGTH_LONG).show()
+                }
             }
 
-            override fun onFailure(call: Call<GetLoginUserResponse>, t: Throwable) {
-                Toast.makeText(this@LoginActivity,"error", Toast.LENGTH_LONG).show()
+            override fun onFailure(call: Call<GetLoginResponse>, t: Throwable) {
+
             }
 
         })
 
-    })
-
     }
-
-
 }
+
+
+
